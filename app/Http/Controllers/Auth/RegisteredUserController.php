@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -14,37 +13,53 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): View
     {
         return view('auth.register');
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'gender' => ['required', 'string'],
+            'date_of_birth' => ['required', 'date'],
+            'profession' => ['nullable', 'string'],
+            'number_of_children' => ['nullable', 'integer'],
+            'marital_status' => ['nullable', 'string'],
+            'country' => ['nullable', 'string'],
+            'state' => ['nullable', 'string'],
+            'city' => ['nullable', 'string'],
+            'neighborhood' => ['nullable', 'string'],
+            'street' => ['nullable', 'string'],
+            'number' => ['nullable', 'string'],
+            'complement' => ['nullable', 'string'],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'gender' => $request->gender,
+            'date_of_birth' => $request->date_of_birth,
+            'profession' => $request->profession,
+            'number_of_children' => $request->number_of_children,
+            'marital_status' => $request->marital_status,
+            'country' => $request->country,
+            'state' => $request->state,
+            'city' => $request->city,
+            'neighborhood' => $request->neighborhood,
+            'street' => $request->street,
+            'number' => $request->number,
+            'complement' => $request->complement,
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('home', absolute: false));
     }
 }

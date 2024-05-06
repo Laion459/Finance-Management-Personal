@@ -4,43 +4,39 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Expense;
-use Illuminate\Support\Facades\Validator;
-
 
 class ExpenseController extends Controller
 {
-    /**
-     * Exibe o formulário de registro de despesas.
-     *
-     * @return \Illuminate\View\View
-     */
+    // Método para exibir o formulário de registro de despesas
     public function create()
     {
+        // Aqui você pode retornar a view do formulário de registro de despesas
         return view('expense-form');
     }
 
-    /**
-     * Armazena uma nova despesa.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
+    // Método para lidar com o envio do formulário de registro de despesas
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        // Validação dos dados do formulário
+        $request->validate([
             'date' => 'required|date',
             'amount' => 'required|numeric',
-            'category' => 'required|exists:categories,id',
-            // Adicione mais regras de validação conforme necessário
+            'category_id' => 'required|exists:categories,id',
+            'payment_method' => 'required',
+            // Adicione outras regras de validação conforme necessário
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
+        // Criação da nova despesa
+        Expense::create([
+            'user_id' => auth()->id(),
+            'date' => $request->date,
+            'amount' => $request->amount,
+            'category_id' => $request->category_id,
+            'description' => $request->description,
+            'payment_method' => $request->payment_method,
+        ]);
 
-        // Crie uma nova despesa com os dados fornecidos
-        Expense::create($request->all());
-
+        // Redirecionamento após o registro da despesa
         return redirect()->route('expenses.create')->with('success', 'Despesa registrada com sucesso!');
     }
 }

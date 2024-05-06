@@ -4,15 +4,17 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\HomePageController;
+use App\Http\Controllers\EntradaController;
+use App\Http\Controllers\SaidaController;
+
 
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -21,17 +23,31 @@ Route::middleware('auth')->group(function () {
 });
 
 
+// Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 
 Route::middleware(['auth'])->group(function () {
+
+
+    // Rota para a página inicial após o login
+    Route::get('/home', [HomePageController::class, 'index'])->name('home');
+
     // Rota para exibir o formulário de registro de despesas
-    Route::get('/expenses/create', [ExpenseController::class, 'create'])->name('expenses.create');
+    Route::get('/expenses/form', [ExpenseController::class, 'create'])->name('expenses.form');
 
     // Rota para lidar com o envio do formulário de registro de despesas
     Route::post('/expenses', [ExpenseController::class, 'store'])->name('expenses.store');
 
     // Rota para a visualização de relatórios mensais
-    Route::get('/reports/monthly', [ReportController::class, 'showMonthlyReports'])->name('reports.monthly');
+    Route::get('/monthly/reports', [ReportController::class, 'showMonthlyReports'])->name('reports.monthly');
+
+
+    // Rotas para cadastro de entradas
+    Route::get('/entradas/form', [EntradaController::class, 'create'])->name('entradas.form');
+    Route::post('/entradas', [EntradaController::class, 'store'])->name('entradas.store');
+
+    // Rotas para cadastro de saídas
+    Route::get('/saidas/form', [SaidaController::class, 'create'])->name('saidas.form');
+    Route::post('/saidas', [SaidaController::class, 'store'])->name('saidas.store');
 });
 
-
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

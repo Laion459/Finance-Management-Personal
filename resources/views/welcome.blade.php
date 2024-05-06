@@ -22,13 +22,15 @@
             <header class="grid grid-cols-2 items-center gap-2 py-10 lg:grid-cols-3">
                 <div class="flex lg:justify-center lg:col-start-2">
                     <!-- Adicione seu logotipo ou nome do aplicativo aqui -->
+                    <img src="{{ asset('img/logo.png') }}" alt="Logo" style="width: 700px; height: 700px; border-radius: 20%; border: 6px solid green;">
+
                 </div>
                 @if (Route::has('login'))
                     <nav class="-mx-3 flex flex-1 justify-end">
                         @auth
                             <!-- Se o usuário estiver autenticado, exiba o link para o painel de controle ou perfil -->
-                            <a href="{{ url('/dashboard') }}" class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white">
-                                Dashboard
+                            <a href="{{ url('/home') }}" class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white">
+                                Home
                             </a>
                         @else
                             <!-- Se não, exiba os links para autenticação -->

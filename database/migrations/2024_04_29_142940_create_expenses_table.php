@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('client_id');
+            $table->unsignedBigInteger('user_id');
             $table->date('date');
             $table->decimal('amount', 10, 2);
             $table->unsignedBigInteger('category_id');
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Chaves estrangeiras
-            $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
 
