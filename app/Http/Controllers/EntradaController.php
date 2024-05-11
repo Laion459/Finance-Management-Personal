@@ -9,7 +9,7 @@ class EntradaController extends Controller
 {
     public function create()
     {
-        return view('entradas');
+        return view('entradas.form');
     }
 
     public function store(Request $request)

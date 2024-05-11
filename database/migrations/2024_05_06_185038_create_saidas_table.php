@@ -16,6 +16,7 @@ class CreateSaidasTable extends Migration
             $table->string('tipo');
             $table->string('descricao')->nullable();
             $table->decimal('valor', 10, 2);
+            $table->string('categoria');
             $table->timestamps();
         });
     }

@@ -7,6 +7,8 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\HomePageController;
 use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\SaidaController;
+use App\Http\Controllers\NotificationController;
+
 
 
 
@@ -26,6 +28,7 @@ Route::middleware('auth')->group(function () {
 // Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
 
 
     // Rota para a página inicial após o login

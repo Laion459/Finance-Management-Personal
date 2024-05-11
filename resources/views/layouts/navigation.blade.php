@@ -42,14 +42,34 @@
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
 
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
+                            <x-dropdown-link :href="route('logout')" onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
                 </x-dropdown>
+
+
+                <!-- Settings Dropdown -->
+
+                <div class="hidden sm:flex sm:items-center sm:ms-6 relative">
+                    <!-- Ícone da campainha para notificações -->
+                    <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+                        <div class="ms-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+                                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901" />
+                            </svg>
+                            <!-- Bolinha com o número de notificações -->
+                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-1 py-0.5 rounded-full bg-red-500 text-xs text-white" style="position: absolute; top: 0; right: 0;">0</span>
+                        </div>
+                    </button>
+                </div>
+
+
+
+
+
             </div>
 
             <!-- Hamburger -->
@@ -68,7 +88,7 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
-                {{ __('home') }}
+                {{ __('HOME') }}
             </x-responsive-nav-link>
         </div>
 
@@ -88,8 +108,7 @@
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
 
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
+                    <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault();
                                         this.closest('form').submit();">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
@@ -97,4 +116,17 @@
             </div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.get('/notifications/unread-count', function(response) {
+                if (response.unread_count > 0) {
+                    $('.nav-notification-badge').text(response.unread_count).show();
+                } else {
+                    $('.nav-notification-badge').hide();
+                }
+            });
+        });
+    </script>
+
 </nav>
