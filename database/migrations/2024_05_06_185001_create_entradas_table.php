@@ -1,6 +1,5 @@
 <?php
 
-// database/migrations/[timestamp]_create_entradas_table.php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,6 +13,7 @@ class CreateEntradasTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('tipo');
+            $table->string('subtipo')->nullable();
             $table->string('descricao')->nullable();
             $table->decimal('valor', 10, 2);
             $table->timestamps();

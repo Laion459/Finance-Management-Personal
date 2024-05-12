@@ -3,41 +3,80 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Expense;
+use App\Models\Entrada;
+use App\Models\Saida;
 use Carbon\Carbon;
 
 class ReportController extends Controller
 {
-    // Método para a visualização de relatórios mensais
     public function showMonthlyReports()
     {
-        // Recupera o mês e o ano atual
         $month = Carbon::now()->format('m');
         $year = Carbon::now()->format('Y');
+        $userId = auth()->id();
 
-        // Recupera as despesas do mês atual
-        $expenses = Expense::whereMonth('date', $month)
-                            ->whereYear('date', $year)
-                            ->where('user_id', auth()->id()) // Filtra apenas as despesas do usuário logado
-                            ->get();
+        // Entradas
+        $entradas = Entrada::whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
+            ->where('user_id', $userId)
+            ->get();
+        $totalEntradas = $entradas->sum('valor');
+        $entradasPorCategoria = $this->calcularTotaisPorCategoria($entradas);
 
-        // Agrupa as despesas por categoria
-        $expensesByCategory = $expenses->groupBy('category_id');
+        // Saídas
+        $saidas = Saida::whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
+            ->where('user_id', $userId)
+            ->get();
+        $totalSaidas = $saidas->sum('valor');
+        $saidasPorCategoria = $this->calcularTotaisPorCategoria($saidas);
 
-        // Formata os dados para o formato esperado pelo Chart.js
-        $chartData = [];
-        foreach ($expensesByCategory as $categoryId => $expenses) {
-            $categoryName = $expenses->first()->category->name;
-            $totalAmount = $expenses->sum('amount');
-            $chartData[] = [
-                'label' => $categoryName,
-                'amount' => $totalAmount
-            ];
-        }
+        // Calcular totais de saída diários
+        $saidasDiarias = $this->calcularTotaisDiarios($saidas);
 
-        // Retorna a view 'monthly-reports' com os dados das despesas do mês atual e o total
+        // Criar um array com todos os dados para os gráficos
+        $chartData = [
+            'total' => [
+                'labels' => ['Entradas', 'Saídas'],
+                'data' => [$totalEntradas, $totalSaidas]
+            ],
+            'dailyExpenses' => [
+                'labels' => array_keys($saidasDiarias),
+                'data' => array_values($saidasDiarias)
+            ],
+            'expensesByCategory' => [
+                'labels' => array_keys($saidasPorCategoria),
+                'data' => array_values($saidasPorCategoria)
+            ],
+            'incomesByCategory' => [
+                'labels' => array_keys($entradasPorCategoria),
+                'data' => array_values($entradasPorCategoria)
+            ]
+        ];
+
         return view('monthly-reports', [
-            'chartData' => $chartData
+            'chartData' => json_encode($chartData)
         ]);
+    }
+
+    private function calcularTotaisPorCategoria($dados)
+    {
+        $totaisPorCategoria = [];
+        foreach ($dados->groupBy('categoria') as $categoria => $itens) {
+            $totaisPorCategoria[$categoria] = $itens->sum('valor');
+        }
+        return $totaisPorCategoria;
+    }
+
+    private function calcularTotaisDiarios($saidas)
+    {
+        $saidasDiarias = [];
+        foreach ($saidas->groupBy(function ($item) {
+            return $item->created_at->format('d');
+        }) as $dia => $itens) {
+            // Converter $dia (número) para string
+            $saidasDiarias[(string)$dia] = $itens->sum('valor');
+        }
+        return $saidasDiarias;
     }
 }
