@@ -13,7 +13,7 @@ class CreateSaidasTable extends Migration
         Schema::create('saidas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('tipo');
+            $table->string('tipo_despesa');
             $table->string('descricao')->nullable();
             $table->decimal('valor', 10, 2);
             $table->string('categoria');

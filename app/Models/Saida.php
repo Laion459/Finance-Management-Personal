@@ -11,7 +11,8 @@ class Saida extends Model
 
     protected $fillable = [
         'user_id',
-        'tipo',
+        'tipo_despesa',
+        'categoria',
         'descricao',
         'valor',
     ];
@@ -22,7 +23,7 @@ class Saida extends Model
     {
         return $this->belongsTo(Category::class);
     }
-    
+
     // Relação com o modelo User (um para muitos)
     public function user()
     {

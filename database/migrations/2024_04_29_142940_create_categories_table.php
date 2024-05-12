@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -77,6 +78,49 @@ class CreateCategoriesTable extends Migration
             [
                 'name' => 'Outros',
                 'description' => 'Outras formas de entrada de dinheiro',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            // Adicionando as categorias de saída
+            [
+                'name' => 'Moradia',
+                'description' => 'Despesas relacionadas à moradia',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'name' => 'Transporte',
+                'description' => 'Despesas relacionadas ao transporte',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'name' => 'Alimentação',
+                'description' => 'Despesas relacionadas à alimentação',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'name' => 'Saúde',
+                'description' => 'Despesas relacionadas à saúde',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'name' => 'Educação',
+                'description' => 'Despesas relacionadas à educação',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'name' => 'Lazer',
+                'description' => 'Despesas relacionadas ao lazer',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'name' => 'Outros',
+                'description' => 'Outras despesas',
                 'created_at' => now(),
                 'updated_at' => now()
             ]

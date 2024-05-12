@@ -8,6 +8,9 @@
             <form action="{{ route('saidas.store') }}" method="POST">
                 @csrf
 
+                <!-- Adicionando o campo oculto para tipo_despesa -->
+                <input type="hidden" name="tipo_despesa" id="tipo_despesa_hidden" value="">
+
                 <div class="mb-4">
                     <label for="tipo_despesa" class="text-white block mb-2">Tipo de Despesa</label>
                     <select name="tipo_despesa" id="tipo_despesa" class="bg-gray-700 border border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:border-blue-400">
@@ -60,6 +63,9 @@
                 $.each(categorias, function(index, categoria) {
                     $('#categoria').append('<option value="' + categoria + '">' + categoria + '</option>');
                 });
+
+                // Atualizar o campo oculto 'tipo_despesa_hidden' com o valor selecionado
+                $('#tipo_despesa_hidden').val(tipoDespesa);
             });
 
             function categoriasPorTipo(tipo) {
@@ -84,6 +90,5 @@
                 }
             }
         });
-
     </script>
 </x-app-layout>
