@@ -18,12 +18,14 @@ class EntradaController extends Controller
         $request->validate([
             'tipo' => 'required',
             'valor' => 'required|numeric',
+            'subtipo' => 'required',
         ]);
 
         // Crie uma nova entrada no banco de dados
         Entrada::create([
             'user_id' => auth()->id(),
             'tipo' => $request->tipo,
+            'subtipo' => $request->subtipo,
             'descricao' => $request->descricao,
             'valor' => $request->valor,
         ]);

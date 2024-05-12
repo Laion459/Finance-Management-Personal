@@ -2,7 +2,6 @@
     <x-slot name="header">
         <h1 class="text-white text-2xl mb-4 flex justify-center items-center">Registrar Entrada</h1>
     </x-slot>
-
     <div class="flex justify-center items-center h-screen bg-gray-900">
         <div class="bg-gray-800 rounded-lg p-8 text-center">
             <form action="{{ route('entradas.store') }}" method="POST">
@@ -17,8 +16,35 @@
                         <option value="outros">Outros</option>
                     </select>
                 </div>
-                <div class="mb-4" id="subtipo-container">
-                    <!-- Opções de subtipo serão adicionadas dinamicamente aqui -->
+                <div class="mb-4">
+                    <label for="subtipo" class="text-white block mb-2">Subtipo</label>
+                    <select name="subtipo" id="subtipo" class="bg-gray-700 border border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:border-blue-400" required>
+                        <optgroup label="Salário" id="salario-subtipos" style="display: none;">
+                            <option value="Salário Mensal">Salário Mensal</option>
+                            <option value="Bônus">Bônus</option>
+                            <option value="Participação nos Lucros">Participação nos Lucros</option>
+                            <option value="Horas Extras">Horas Extras</option>
+                        </optgroup>
+                        <optgroup label="Investimentos" id="investimentos-subtipos" style="display: none;">
+                            <option value="Dividendos">Dividendos</option>
+                            <option value="Juros">Juros</option>
+                            <option value="Ganhos de Capital">Ganhos de Capital</option>
+                        </optgroup>
+                        <optgroup label="Renda Extra" id="renda_extra-subtipos" style="display: none;">
+                            <option value="Trabalho Freelance">Trabalho Freelance</option>
+                            <option value="Vendas Online">Vendas Online</option>
+                            <option value="Aluguel de Imóveis">Aluguel de Imóveis</option>
+                        </optgroup>
+                        <optgroup label="Presentes" id="presentes-subtipos" style="display: none;">
+                            <option value="Dinheiro">Dinheiro</option>
+                            <option value="Bens de Valor">Bens de Valor</option>
+                        </optgroup>
+                        <optgroup label="Outros" id="outros-subtipos" style="display: none;">
+                            <option value="Restituição de Imposto">Restituição de Imposto</option>
+                            <option value="Prêmios">Prêmios</option>
+                            <option value="Heranças">Heranças</option>
+                        </optgroup>
+                    </select>
                 </div>
                 <div class="mb-4">
                     <label for="descricao" class="text-white block mb-2">Descrição</label>
@@ -36,44 +62,16 @@
             </div>
         </div>
     </div>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     <script>
         $(document).ready(function() {
             $('#tipo').change(function() {
                 var tipo = $(this).val();
-                console.log('Tipo selecionado:', tipo);
-                var subtipos = getSubtipos(tipo);
-                console.log('Subtipos:', subtipos);
-                $('#subtipo-container').empty();
-                if (subtipos.length > 0) {
-                    var selectHtml = '<label for="subtipo" class="text-white block mb-2">Subtipo</label>';
-                    selectHtml += '<select name="subtipo" id="subtipo" class="bg-gray-700 border border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:border-blue-400" required>';
-                    $.each(subtipos, function(index, subtipo) {
-                        selectHtml += '<option value="' + subtipo + '">' + subtipo + '</option>';
-                    });
-                    selectHtml += '</select>';
-                    $('#subtipo-container').append(selectHtml);
-                }
+                // Esconde todos os optgroup
+                $('#subtipo optgroup').hide();
+                // Mostra o optgroup correspondente ao tipo selecionado
+                $('#' + tipo + '-subtipos').show();
             });
-
-            function getSubtipos(tipo) {
-                switch (tipo) {
-                    case 'salario':
-                        return ['Salário Mensal', 'Bônus', 'Participação nos Lucros', 'Horas Extras'];
-                    case 'investimentos':
-                        return ['Dividendos', 'Juros', 'Ganhos de Capital'];
-                    case 'renda_extra':
-                        return ['Trabalho Freelance', 'Vendas Online', 'Aluguel de Imóveis'];
-                    case 'presentes':
-                        return ['Dinheiro', 'Bens de Valor'];
-                    case 'outros':
-                        return ['Restituição de Imposto', 'Prêmios', 'Heranças'];
-                    default:
-                        return [];
-                }
-            }
         });
     </script>
 </x-app-layout>

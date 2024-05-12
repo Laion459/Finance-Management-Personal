@@ -60,13 +60,18 @@ class ReportController extends Controller
     }
 
     private function calcularTotaisPorCategoria($dados)
-    {
-        $totaisPorCategoria = [];
-        foreach ($dados->groupBy('categoria') as $categoria => $itens) {
-            $totaisPorCategoria[$categoria] = $itens->sum('valor');
+{
+    $totaisPorCategoria = [];
+
+    foreach ($dados->groupBy('tipo') as $tipo => $itensPorTipo) {
+        foreach ($itensPorTipo->groupBy('subtipo') as $subtipo => $itens) {
+            $categoria = $tipo . ' - ' . $subtipo; // Criar a string "Tipo - Subtipo"
+            $totaisPorCategoria[$categoria] = $itens->sum('valor'); // Usar a string como chave
         }
-        return $totaisPorCategoria;
     }
+
+    return $totaisPorCategoria;
+}
 
     private function calcularTotaisDiarios($saidas)
     {

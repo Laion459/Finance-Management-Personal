@@ -12,6 +12,7 @@ class Entrada extends Model
     protected $fillable = [
         'user_id',
         'tipo',
+        'subtipo',
         'descricao',
         'valor',
     ];
