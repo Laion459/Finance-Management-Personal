@@ -12,6 +12,7 @@ class Saida extends Model
     protected $fillable = [
         'user_id',
         'tipo_despesa',
+        'subtipo',
         'categoria',
         'descricao',
         'valor',

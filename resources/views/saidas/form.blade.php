@@ -63,13 +63,16 @@
                 $.each(categorias, function(index, categoria) {
                     $('#categoria').append('<option value="' + categoria + '">' + categoria + '</option>');
                 });
-
                 // Atualizar o campo oculto 'tipo_despesa_hidden' com o valor selecionado
                 $('#tipo_despesa_hidden').val(tipoDespesa);
             });
 
+            // Atualizar o subtipo_hidden quando a categoria for selecionada
+            $('#categoria').change(function() {
+                $('#categoria_hidden').val($(this).val());
+            });
+
             function categoriasPorTipo(tipo) {
-                // Lógica para retornar categorias com base no tipo de despesa selecionado
                 switch (tipo) {
                     case 'moradia':
                         return ['Aluguel', 'Condomínio', 'IPTU', 'Água', 'Luz', 'Gás', 'Internet', 'Telefone', 'TV a cabo', 'Manutenção', 'Outros'];

@@ -24,18 +24,12 @@
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-300 text-sm font-bold mb-2" for="category_id">Categoria:</label>
+                <label class="block text-gray-300 text-sm font-bold mb-2" for="category_id">Tipo de Despesa:</label>
                 <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-800 bg-gray-200 leading-tight focus:outline-none focus:shadow-outline" name="category_id" id="category_id" required>
-                    <option value="">Selecione a categoria</option>
-                    <option value="1">Alimentação</option>
-                    <option value="2">Transporte</option>
-                    <option value="3">Lazer</option>
-                    <option value="4">Hospedagem</option>
-                    <option value="5">Educação</option>
-                    <option value="6">Saúde</option>
-                    <option value="7">Compras</option>
-                    <option value="8">Contas</option>
-                    <option value="9">Outros</option>
+                    <option value="">Selecione o tipo de despesa</option>
+                    @foreach($expenseCategories as $id => $category)
+                    <option value="{{ $id }}">{{ $category }}</option>
+                    @endforeach
                 </select>
             </div>
 
@@ -43,20 +37,19 @@
                 <label class="block text-gray-300 text-sm font-bold mb-2" for="payment_method">Método de Pagamento:</label>
                 <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-800 bg-gray-200 leading-tight focus:outline-none focus:shadow-outline" name="payment_method" id="payment_method" required>
                     <option value="">Selecione o método de pagamento</option>
-                    <option value="pix">PIX</option>
-                    <option value="credito">Crédito</option>
-                    <option value="debito">Débito</option>
-                    <option value="dinheiro">Dinheiro</option>
-                    <option value="outro">Outro</option>
+                    @foreach($paymentCategories as $id => $category)
+                    <option value="{{ $id }}">{{ $category }}</option>
+                    @endforeach
                 </select>
             </div>
+
 
             <div class="mb-4">
                 <label class="block text-gray-300 text-sm font-bold mb-2" for="description">Descrição (opcional):</label>
                 <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-800 bg-gray-200 leading-tight focus:outline-none focus:shadow-outline" name="description" id="description" rows="4"></textarea>
             </div>
 
-            
+
 
             <div class="flex items-center justify-center">
                 <button class="bg-blue-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Registrar Despesa</button>

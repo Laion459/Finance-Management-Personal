@@ -15,7 +15,7 @@ class SaidaController extends Controller
     public function store(Request $request)
     {
         // Valide os dados recebidos do formulário
-        /*
+        
         // Verifique se a categoria recebida está na lista de categorias permitidas
         $categoriasPermitidas = ['Aluguel', 'Condomínio', 'IPTU', 'Água', 'Luz', 'Gás', 'Internet', 'Telefone', 'TV a cabo', 'Manutenção', 'Outros'];
         $categoriaPermitida = in_array($request->categoria, $categoriasPermitidas);
@@ -24,7 +24,7 @@ class SaidaController extends Controller
         if (!$categoriaPermitida) {
             return redirect()->back()->with('error', 'Categoria inválida.');
         }
-*/
+
         // Definir um valor padrão para tipo_despesa, se não estiver presente no request
         $tipoDespesa = $request->tipo_despesa ?? 'outros';
         // Crie uma nova saída no banco de dados

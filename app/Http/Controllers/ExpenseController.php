@@ -5,14 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\Expense;
+use App\Models\Category;
 
 class ExpenseController extends Controller
 {
     // Método para exibir o formulário de registro de despesas
     public function create()
     {
-        // Aqui você pode retornar a view do formulário de registro de despesas
-        return view('expense-form');
+        // Aqui retornar a view do formulário de registro de despesas
+        // Consulta para obter as categorias de tipos de despesas
+        $expenseCategories = Category::whereIn('name', ['Moradia', 'Transporte', 'Alimentação', 'Saúde', 'Educação', 'Lazer', 'Outros'])->pluck('name', 'id');
+
+        // Consulta para obter as categorias de métodos de pagamento
+        $paymentCategories = Category::whereIn('name', ['PIX', 'Crédito', 'Débito', 'Dinheiro', 'Outro'])->pluck('name', 'id');
+
+        return view('expense-form', compact('expenseCategories', 'paymentCategories'));
     }
 
     // Método para lidar com o envio do formulário de registro de despesas

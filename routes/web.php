@@ -43,6 +43,8 @@ Route::middleware(['auth'])->group(function () {
     // Rota para a visualização de relatórios mensais
     Route::get('/monthly/reports', [ReportController::class, 'showMonthlyReports'])->name('reports.monthly');
 
+    // Rota para visualização de acompanhamento de orçamento
+    Route::get('/budget/tracking', [ReportController::class, 'showBudgetTracking'])->name('budget-tracking');
 
     // Rotas para cadastro de entradas
     Route::get('/entradas/form', [EntradaController::class, 'create'])->name('entradas.form');

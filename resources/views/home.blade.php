@@ -36,7 +36,7 @@
             <!-- Container for existing buttons -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg flex justify-between">
                 <div class="p-6 text-gray-900 dark:text-gray-100 flex space-x-6">
-                    
+
                     <!-- Button and image for expense registration form -->
                     <div class="flex flex-col items-center">
                         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" style="-webkit-animation: slide-fwd-center 0.45s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; animation: slide-fwd-center 0.45s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;">
@@ -50,7 +50,7 @@
                     <!-- Button and image for budget tracking -->
                     <div class="flex flex-col items-center">
                         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" style="-webkit-animation: slide-fwd-center 0.45s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; animation: slide-fwd-center 0.45s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;">
-                            <a href="{{ route('reports.monthly') }}">
+                            <a href="{{ route('budget-tracking') }}">
                                 <img class="w-24 transition duration-300 transform hover:scale-110" src="{{ asset('img/capa.jpg') }}" alt="Acompanhamento de Orçamento">
                             </a>
                         </button>
