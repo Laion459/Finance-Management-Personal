@@ -53,6 +53,9 @@ Route::middleware(['auth'])->group(function () {
     // Rotas para cadastro de saídas
     Route::get('/saidas/form', [SaidaController::class, 'create'])->name('saidas.form');
     Route::post('/saidas', [SaidaController::class, 'store'])->name('saidas.store');
+
+    // Rota para buscar as ultimas compras
+    Route::get('/ultimas-compras', [ReportController::class, 'getUltimasCompras'])->name('ultimas-compras');
 });
 
 require __DIR__ . '/auth.php';

@@ -38,7 +38,7 @@ class ReportController extends Controller
         // Obter as últimas 7 despesas (de ambas as tabelas)
         $startDate = Carbon::now()->subDays(7);
         $endDate = Carbon::now();
-        $ultimasCompras = $this->getExpensesForPeriod($startDate, $endDate, $userId);
+        $ultimasCompras = $this->getUltimasCompras(); // Busca as últimas 12 compras
 
         // Calcular o total de despesas do mês atual
         $totalDespesasMesAtual = $this->getTotalDespesasMesAtual($userId);
@@ -49,12 +49,24 @@ class ReportController extends Controller
         // Obter dados para gráficos do mês atual
         $chartData = $this->getChartDataForCurrentMonth($userId);
 
+        // Adicionar relatorioMensal a $chartData:
+        $chartData['relatorioMensal'] = $this->calcularRelatorioMensal($userId);
+
+        // Obter as últimas 12 compras
+        $ultimasCompras = $this->getUltimasCompras();
+
+        // Adicionar lista-ultimas-compras ao $chartData
+        $chartData['listaUltimasCompras'] = $ultimasCompras;
+
+        // Adicionar entradas e saidas do dia atual (hoje)
+        $chartData['entradasSaidasHoje'] = $this->getEntradasSaidasHoje($userId);
+
+
         // Retornar a visualização com os dados
         return view('budget-tracking', [
             'ultimasCompras' => $ultimasCompras,
-            'chartData' => json_encode($chartData),
+            'chartData' => json_encode($chartData), // Converta para JSON aqui
             'totalDespesasMes' => $totalDespesasMesAtual, // Total de despesas do mês atual
-            'relatorioMensal' => $relatorioMensal // Dados do relatório mensal
         ]);
     }
 
@@ -239,7 +251,11 @@ class ReportController extends Controller
     // Método para calcular o relatório mensal (últimos 7 dias)
     private function calcularRelatorioMensal($userId)
     {
-        $relatorioMensal = [];
+        $relatorioMensal = [
+            'labels' => [],
+            'entradas' => [],
+            'saidas' => []
+        ];
 
         for ($i = 6; $i >= 0; $i--) {
             $data = Carbon::now()->subDays($i);
@@ -253,10 +269,9 @@ class ReportController extends Controller
             $despesas = $this->getExpensesForPeriod($startDate, $endDate, $userId)
                 ->sum('valor');
 
-            $relatorioMensal[$data->format('d/m')] = [
-                'entradas' => $entradas ?? 0,
-                'saidas' => $despesas ?? 0
-            ];
+            $relatorioMensal['labels'][] = $data->format('d/m');
+            $relatorioMensal['entradas'][] = $entradas ?? 0;
+            $relatorioMensal['saidas'][] = $despesas ?? 0;
         }
 
         return $relatorioMensal;
@@ -307,6 +322,37 @@ class ReportController extends Controller
                 'labels' => array_keys($entradasPorCategoria),
                 'data' => array_values($entradasPorCategoria)
             ]
+        ];
+    }
+
+
+    public function getUltimasCompras()
+    {
+        $userId = auth()->id();
+        $ultimasCompras = $this->getExpensesForPeriod(Carbon::now()->subDays(12), Carbon::now(), $userId)
+            ->sortByDesc('created_at') // Ordena pela data de criação
+            ->take(12); // Limita a 12 compras
+
+        // Retorne os dados no formato que você precisa para o JavaScript
+        // (por exemplo, um array de objetos)
+        return $ultimasCompras->values();
+    }
+
+
+    public function getEntradasSaidasHoje($userId)
+    {
+        $hoje = Carbon::now()->startOfDay(); // Início do dia de hoje
+
+        $entradas = Entrada::where('user_id', $userId)
+            ->whereDate('created_at', $hoje)
+            ->sum('valor');
+
+        $saidas = $this->getExpensesForPeriod($hoje, Carbon::now(), $userId) // Use a função unificada
+            ->sum('valor');
+
+        return [
+            'entradas' => $entradas ?? 0,
+            'saidas' => $saidas ?? 0
         ];
     }
 }

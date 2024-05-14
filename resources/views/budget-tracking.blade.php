@@ -33,48 +33,79 @@
                 </div>
 
 
+                <hr><br>
+
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h2 class="text-xl font-semibold mb-4">Gráfico de Entradas e Saídas de Hoje</h2>
+                    <canvas id="entradasSaidasHojeChart"></canvas>
+                </div>
 
             </div>
 
-            <div class="bg-gray-800 rounded-lg p-6 mb-6">
-                <h2 class="text-xl font-semibold mb-4">Últimas Compras</h2>
-                <ul>
-                    @foreach ($ultimasCompras as $compra)
-                    <li class="border-b border-gray-700 py-2">
-                        {{ $compra->created_at->format('d/m/Y') }} -
-                        {{ $compra->tipo_despesa }} -
-                        {{ $compra->categoria }} -
-                        {{ $compra->descricao ? $compra->descricao : '' }} -
-                        R$ {{ number_format($compra->valor, 2, ',', '.') }}
-                    </li>
-                    @endforeach
-                </ul>
+            <div class="grid grid-cols-0 md:grid-cols-1 gap-6">
+                <div class="bg-gray-800 rounded-lg p-6 mt-0">
+                    <h2 class="text-xl font-semibold mb-4">Últimas Compras</h2>
+                    <ul id="lista-ultimas-compras">
+                    </ul>
 
-            </div>
-            <hr>
+                </div>
 
-            <div class="grid grid-cols-1 gap-6">
-                <hr>
+
 
                 <div class="bg-gray-800 rounded-lg p-6">
                     <h2 class="text-xl font-semibold mb-4">Gráfico de Entradas e Saidas Último Mês</h2>
                     <canvas id="totalChart"></canvas>
 
                 </div>
-
-
-
-
             </div>
+            <hr>
+            <hr>
+
+
 
         </div>
 
 
     </div>
 
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <script>
         const chartData = JSON.parse('{!! $chartData !!}');
+        console.log(chartData)
 
+
+
+        // Preencher a lista inicialmente:
+        chartData.listaUltimasCompras.forEach(function(compra) {
+            // Formatar a data como dia/mês/ano:
+            let dataFormatada = `${new Date(compra.created_at).getDate()}/${new Date(compra.created_at).getMonth() + 1}/${new Date(compra.created_at).getFullYear()}`;
+
+
+
+            let itemLista = `<li class="border-b border-gray-700 py-2">
+                        ${dataFormatada} -
+                        ${compra.tipo_despesa} -
+                        ${compra.categoria} -
+                        ${compra.description ? compra.description : ''} -
+                        R$ ${parseFloat(compra.valor).toFixed(2).replace('.', ',')}
+                    </li>`;
+            $('#lista-ultimas-compras').append(itemLista);
+        });
+
+        // Gráfico entradas saidas data atual (hoje)
+        const entradasSaidasHojeCanvas = document.getElementById('entradasSaidasHojeChart').getContext('2d');
+        new Chart(entradasSaidasHojeCanvas, {
+            type: 'bar', // Ou o tipo de gráfico que você preferir
+            data: {
+                labels: ['Entradas', 'Saídas'],
+                datasets: [{
+                    label: 'Valor (R$)',
+                    data: [chartData.entradasSaidasHoje.entradas, chartData.entradasSaidasHoje.saidas],
+                    backgroundColor: ['#36a2eb', '#ff6384'] // Cores para entradas e saídas
+                }]
+            }
+        });
 
         // Gráfico de Total de Entradas e Saídas
         const totalChartCanvas = document.getElementById('totalChart').getContext('2d');
@@ -118,6 +149,13 @@
                         backgroundColor: '#ff6384'
                     }
                 ]
+            },
+            options: { // Opções adicionais para melhor visualização
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
             }
         });
 
@@ -143,6 +181,38 @@
                 }
             }
         });
+
+
+        function atualizarUltimasCompras() {
+            $.ajax({
+                url: "{{ route('ultimas-compras') }}",
+                type: "GET",
+                dataType: "json",
+                success: function(data) {
+                    $('#lista-ultimas-compras').empty();
+
+                    data.forEach(function(compra) {
+
+                        // Formatar a data:
+                        let dataFormatada = new Date(compra.created_at).toLocaleDateString();
+
+                        // Interpolação correta com template literals:
+                        let itemLista = `<li>
+                            ${compra.created_at} -
+                            ${compra.tipo_despesa} -
+                            ${compra.categoria} -
+                            ${compra.description ? compra.description : ''} -
+                            R$ ${compra.valor.toFixed(2).replace('.', ',')}
+                        </li>`;
+                        $('#lista-ultimas-compras').append(itemLista);
+                    });
+                }
+            });
+        }
+
+        // Chame a função inicialmente e a cada 30 segundos
+        atualizarUltimasCompras();
+        setInterval(atualizarUltimasCompras, 30000);
     </script>
 
 </body>
