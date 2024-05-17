@@ -1,7 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-white text-2xl mb-4">Registrar Saída</h1>
+        <h1 class="flex justify-center items-center h-screen bg-gray-900 text-white text-2xl mb-4">Registrar Saída</h1>
     </x-slot>
+    <hr><br><br>
 
     <div class="flex justify-center items-center h-screen bg-gray-900">
         <div class="bg-gray-800 rounded-lg p-8 w-96 text-center">
@@ -40,13 +41,7 @@
                     <input type="text" name="valor" id="valor" class="bg-gray-700 border border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:border-blue-400" required>
                 </div>
                 <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 w-full">Registrar</button>
-
             </form>
-
-            <!-- Botão "Home" -->
-            <div class="flex justify-center mt-8">
-                <a href="{{ route('home') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Home</a>
-            </div>
         </div>
     </div>
 

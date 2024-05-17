@@ -61,9 +61,18 @@ class ReportController extends Controller
         // Adicionar entradas e saidas do dia atual (hoje)
         $chartData['entradasSaidasHoje'] = $this->getEntradasSaidasHoje($userId);
 
+        // Obter as compras do último mês por dia
+        $comprasUltimoMesPorDia = $this->getComprasMesAtualAteMomento($userId);
+
+        // Adicionar as compras do último mês por dia ao $chartData
+        $chartData['comprasUltimoMesPorDia'] = $comprasUltimoMesPorDia;
+
+
+        //dd($chartData);
 
         // Retornar a visualização com os dados
         return view('budget-tracking', [
+            'comprasUltimoMesPorDia' => $comprasUltimoMesPorDia,
             'ultimasCompras' => $ultimasCompras,
             'chartData' => json_encode($chartData), // Converta para JSON aqui
             'totalDespesasMes' => $totalDespesasMesAtual, // Total de despesas do mês atual
@@ -354,5 +363,37 @@ class ReportController extends Controller
             'entradas' => $entradas ?? 0,
             'saidas' => $saidas ?? 0
         ];
+    }
+
+
+
+    public function getComprasMesAtualAteMomento($userId)
+    {
+        // Obter o primeiro dia do mês atual
+        $primeiroDiaMesAtual = Carbon::now()->startOfMonth();
+
+        // Obter a data atual
+        $dataAtual = Carbon::now();
+
+        // Obter todas as compras do mês atual até a data atual
+        $comprasMesAtual = $this->getExpensesForPeriod($primeiroDiaMesAtual, $dataAtual, $userId);
+
+        // Inicializar um array para armazenar as compras por dia
+        $comprasPorDia = [];
+
+        // Organizar as compras por dia
+        foreach ($comprasMesAtual->groupBy(function ($item) {
+            return $item->created_at->format('Y-m-d'); // Agrupa por data (dia)
+        }) as $dia => $compras) {
+            $comprasPorDia[] = [
+                'dia' => Carbon::parse($dia)->format('d/m/Y'), // Formatando a data
+                'compras' => $compras // Lista de compras para este dia
+            ];
+        }
+
+        // Ordenar as compras por data, do mais recente para o mais antigo
+        $comprasPorDia = array_reverse($comprasPorDia);
+
+        return $comprasPorDia;
     }
 }

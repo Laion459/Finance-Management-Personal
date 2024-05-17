@@ -6,6 +6,7 @@ use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\Expense;
 use App\Models\Category;
+use App\Events\NewNotification;
 
 class ExpenseController extends Controller
 {
@@ -56,6 +57,10 @@ class ExpenseController extends Controller
         $notification->user_id = auth()->id();
         $notification->message = 'Nova despesa cadastrada.';
         $notification->save();
+
+
+        // Emitir evento de nova notificação via broadcast
+        broadcast(new NewNotification($notification));
 
         // Redirecionamento após o registro da despesa
         return redirect()->route('expenses.form')->with('success', 'Despesa registrada com sucesso!');

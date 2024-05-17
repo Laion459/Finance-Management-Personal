@@ -16,3 +16,4 @@ class NotificationController extends Controller
         return response()->json(['unread_count' => $unreadCount]);
     }
 }
+ 

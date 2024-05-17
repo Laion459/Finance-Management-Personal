@@ -1,7 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-white text-2xl mb-4 flex justify-center items-center">Registrar Entrada</h1>
+        <h1 class="text-white text-2xl mb-4 flex justify-center items-center">Registrar Entrada Mensais</h1>
+
     </x-slot>
+    <hr><br><br><br>
     <div class="flex justify-center items-center h-screen bg-gray-900">
         <div class="bg-gray-800 rounded-lg p-8 text-center">
             <form action="{{ route('entradas.store') }}" method="POST">
@@ -56,10 +58,6 @@
                 </div>
                 <button type="submit" class="bg-blue-500 text-white py-2 px-2 rounded-lg hover:bg-blue-600 ">Registrar</button>
             </form>
-            <!-- Botão "Home" -->
-            <div class="flex justify-center mt-8">
-                <a href="{{ route('home') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Home</a>
-            </div>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

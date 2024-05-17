@@ -10,6 +10,7 @@
 
 <body class="bg-gray-900 text-white p-6">
     <div class="max-w-7xl mx-auto">
+        
         <h1 class="text-3xl font-bold mb-8">Relatórios Mensais</h1>
         <div class="flex justify-center mt-8">
             <a href="{{ route('home') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Home</a>
@@ -51,7 +52,7 @@
         <div class="flex justify-center mt-8">
             <h1>Gráficos Anuais</h1>
         </div>
-        
+
         <br>
         <hr><br>
 
@@ -236,12 +237,14 @@
         }
     });
 
+
+
     // Gráfico de Total de Entradas Anual por Categoria
     const yearlyIncomesByCategoryChartCanvas = document.getElementById('yearlyIncomesByCategoryChart').getContext('2d');
 
     // Corrigindo a atribuição da variável:
     const yearlyIncomesByCategoryChart = new Chart(yearlyIncomesByCategoryChartCanvas, {
-        type: 'bar', // ou 'line', dependendo do tipo de gráfico que você prefere
+        type: 'bar',
         data: {
             labels: Object.keys(chartData.yearlyIncomesByCategory), // Anos
             datasets: []
@@ -266,7 +269,7 @@
     }
     yearlyIncomesByCategoryChart.update();
 
-    // Função para gerar cores aleatórias (opcional)
+    // Função para gerar cores aleatórias
     function getRandomColor() {
         const letters = '0123456789ABCDEF';
         let color = '#';

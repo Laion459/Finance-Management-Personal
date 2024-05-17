@@ -13,7 +13,7 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
-                        {{ __('home') }}
+                        {{ __('HOME') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -61,9 +61,15 @@
                                 <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901" />
                             </svg>
                             <!-- Bolinha com o número de notificações -->
-                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-1 py-0.5 rounded-full bg-red-500 text-xs text-white" style="position: absolute; top: 0; right: 0;">0</span>
+                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-1 py-0.5 rounded-full bg-red-500 text-xs text-white nav-notification-badge" style="position: absolute; top: 0; right: 0;">0</span>
                         </div>
                     </button>
+                    <!-- Campo Flutuante -->
+                    <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-md shadow-lg">
+                        <ul class="py-2 px-3" id="notification-list">
+                            <!-- As notificações serão adicionadas aqui -->
+                        </ul>
+                    </div>
                 </div>
 
 
@@ -119,13 +125,26 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            $.get('/notifications/unread-count', function(response) {
-                if (response.unread_count > 0) {
-                    $('.nav-notification-badge').text(response.unread_count).show();
-                } else {
-                    $('.nav-notification-badge').hide();
-                }
-            });
+                    $.get('/notifications/unread-count', function(response) {
+                        if (response.unread_count > 0) {
+                            $('.nav-notification-badge').text(response.unread_count).show();
+                        } else {
+                            $('.nav-notification-badge').hide();
+                        }
+                    });
+
+                    Echo.private('notifications')
+                        .listen('NewNotification', (e) => {
+                            // 1. Atualizar contador de notificações
+                            let count = parseInt($('.nav-notification-badge').text() || '0');
+                            $('.nav-notification-badge').text(count + 1).show();
+
+                            // 2. Adicionar nova notificação à lista no dropdown
+                            $('#notification-list').append('<li class="py-1 border-b border-gray-200">' + e.notification.message + '</li>');
+
+                            // Atualizar a lista de notificações no dropdown
+                            fetchNotifications();
+                        });
         });
     </script>
 

@@ -5,13 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulário de Registro de Despesas</title>
-    <!-- Adicione o link para o arquivo CSS do Tailwind CSS -->
+    <!-- link para o arquivo CSS do Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-gray-800 p-6 flex justify-center items-center h-screen">
+
     <div class="w-full max-w-lg">
+        <!-- Botão para voltar à página inicial -->
+        <div class="flex items-center justify-center mt-16">
+            <a href="{{ route('home') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Home</a>
+        </div>
+        <br><hr><br>
         <h1 class="text-2xl font-bold mb-4 text-gray-200 text-center">Formulário de Registro de Despesas</h1>
+        <hr><br>
         <form action="{{ route('expenses.store') }}" method="post" class="bg-gray-900 shadow-md rounded px-8 pt-6 pb-8 mb-4">
             @csrf
             <div class="mb-4">
@@ -55,10 +62,7 @@
                 <button class="bg-blue-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Registrar Despesa</button>
             </div>
 
-            <!-- Botão para voltar à página inicial -->
-            <div class="flex items-center justify-center mt-16">
-                <a href="{{ route('home') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Home</a>
-            </div>
+
 
         </form>
     </div>
