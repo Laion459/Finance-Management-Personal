@@ -10,7 +10,7 @@ class Category extends Model
     protected $table = 'categories';
 
     // Campos que podem ser preenchidos em massa
-    protected $fillable = ['name'];
+    protected $fillable = ['type', 'subtype', 'category_type']; 
 
     // Relacionamento com despesas
     public function expenses()

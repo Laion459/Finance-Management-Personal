@@ -36,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Rota para exibir o formulário de registro de despesas
     Route::get('/expenses/form', [ExpenseController::class, 'create'])->name('expenses.form');
+    
 
     // Rota para lidar com o envio do formulário de registro de despesas
     Route::post('/expenses', [ExpenseController::class, 'store'])->name('expenses.store');

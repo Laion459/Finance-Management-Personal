@@ -8,34 +8,38 @@ use App\Models\Category;
 use App\Events\NewNotification;
 use App\Models\Notification;
 
-
 class ExpenseController extends Controller
 {
-    // Método para exibir o formulário de registro de despesas
     public function create()
     {
-        // Aqui retornar a view do formulário de registro de despesas
         // Consulta para obter as categorias de tipos de despesas
-        $expenseCategories = Category::whereIn('name', ['Moradia', 'Transporte', 'Alimentação', 'Saúde', 'Educação', 'Lazer', 'Outros'])->pluck('name', 'id');
+        $expenseCategories = Category::where('category_type', 'expense')->pluck('subtype', 'id');
 
         // Consulta para obter as categorias de métodos de pagamento
-        $paymentCategories = Category::whereIn('name', ['PIX', 'Crédito', 'Débito', 'Dinheiro', 'Outro'])->pluck('name', 'id');
+        $paymentCategories = Category::where('category_type', 'payment_method')->pluck('subtype', 'id');
 
-        return view('expense-form', compact('expenseCategories', 'paymentCategories'));
+        // Converta os arrays associativos para arrays de objetos
+        $expenseCategories = $expenseCategories->map(function ($subtype, $id) {
+            return ['id' => $id, 'name' => $subtype];
+        })->toArray();
+
+        $paymentCategories = $paymentCategories->map(function ($subtype, $id) {
+            return ['id' => $id, 'name' => $subtype];
+        })->toArray();
+
+        // Passe as categorias para a view
+        return view('expenses.form', compact('expenseCategories', 'paymentCategories'));
     }
-
-    // Método para lidar com o envio do formulário de registro de despesas
 
     public function store(Request $request)
     {
-
         // Validação dos dados do formulário
-
         $request->validate([
             'date' => 'required|date',
             'amount' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
             'payment_method' => 'required',
+            'description' => 'nullable',
         ]);
 
         // Recupera o ID do usuário autenticado
@@ -51,15 +55,11 @@ class ExpenseController extends Controller
             'payment_method' => $request->payment_method,
         ]);
 
-
-
         // Enviar uma notificação para o usuário
         $notification = new Notification();
         $notification->user_id = auth()->id();
         $notification->message = 'N: ' . $expense->category_id . ' - R$ ' . $expense->amount;
         $notification->save();
-
-
 
         // Emitir evento de nova notificação via broadcast
         broadcast(new NewNotification($notification));

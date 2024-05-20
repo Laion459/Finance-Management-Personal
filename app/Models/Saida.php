@@ -11,21 +11,18 @@ class Saida extends Model
 
     protected $fillable = [
         'user_id',
-        'tipo_despesa',
-        'subtipo',
-        'categoria',
-        'descricao',
-        'valor',
+        'date',
+        'amount',
+        'category_id',
+        'description',
+        'payment_method',
     ];
 
-
-    // Relacionamento com a tabela de categorias
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
-    // Relação com o modelo User (um para muitos)
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -11,10 +11,12 @@ class Entrada extends Model
 
     protected $fillable = [
         'user_id',
-        'tipo',
-        'subtipo',
-        'descricao',
-        'valor',
+        'date',
+        'type',
+        'subtype',
+        'description',
+        'amount',
+        'category_type'
     ];
 
     // Relação com o modelo User (um para muitos)

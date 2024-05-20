@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="text-white text-2xl mb-4 flex justify-center items-center">Registrar Saídas</h1>
+        <h1 class="text-white text-2xl mb-4 flex justify-center items-center">Registrar Despesas</h1>
     </x-slot>
     <hr>
     <div class="flex justify-center items-center h-screen bg-gray-900">
         <div class="bg-gray-800 rounded-lg p-8 text-center">
-            <form action="{{ route('saidas.store') }}" method="POST">
+            <form action="{{ route('expenses.store') }}" method="POST">
                 @csrf
                 <div class="mb-4">
                     <label for="date" class="text-white block mb-2">Data</label>
@@ -37,11 +37,10 @@
                     <label for="description" class="text-white block mb-2">Descrição (opcional)</label>
                     <textarea class="bg-gray-700 border border-gray-600 rounded-lg p-2 w-full focus:outline-none focus:border-blue-400" name="description" id="description"></textarea>
                 </div>
-                <button type="submit" class="bg-blue-500 text-white rounded-lg p-2 w-full hover:bg-blue-600">Registrar Saída</button>
+                <button type="submit" class="bg-blue-500 text-white rounded-lg p-2 w-full hover:bg-blue-600">Registrar Despesa</button>
             </form>
         </div>
     </div>
-
 </x-app-layout>
 <script>
     // Obtém as categorias de despesas do PHP em formato JSON
@@ -49,6 +48,10 @@
     // Obtém as categorias de métodos de pagamento do PHP em formato JSON
     const paymentCategories = JSON.parse('{!! json_encode($paymentCategories) !!}');
     dd(expenseCategories, paymentCategories);
+
+
+    console.log('expenseCategories:', expenseCategories);
+    console.log('paymentCategories:', paymentCategories);
     // Função para preencher os subtipos quando um tipo de despesa é selecionado
     function fillPaymentMethods() {
         const selectedCategoryId = document.getElementById('category_id').value;
