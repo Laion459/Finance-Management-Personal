@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\Expense;
 use App\Models\Category;
 use App\Events\NewNotification;
+use App\Models\Notification;
+
 
 class ExpenseController extends Controller
 {
@@ -55,8 +56,9 @@ class ExpenseController extends Controller
         // Enviar uma notificação para o usuário
         $notification = new Notification();
         $notification->user_id = auth()->id();
-        $notification->message = 'Nova despesa cadastrada.';
+        $notification->message = 'N: ' . $expense->category_id . ' - R$ ' . $expense->amount;
         $notification->save();
+
 
 
         // Emitir evento de nova notificação via broadcast

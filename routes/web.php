@@ -8,6 +8,7 @@ use App\Http\Controllers\HomePageController;
 use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\SaidaController;
 use App\Http\Controllers\NotificationController;
+use Illuminate\Http\Request;
 
 
 
@@ -28,7 +29,6 @@ Route::middleware('auth')->group(function () {
 // Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
 
 
     // Rota para a página inicial após o login
@@ -56,6 +56,25 @@ Route::middleware(['auth'])->group(function () {
 
     // Rota para buscar as ultimas compras
     Route::get('/ultimas-compras', [ReportController::class, 'getUltimasCompras'])->name('ultimas-compras');
+});
+
+
+Route::middleware('cors')->group(function () {
+    Route::get('/api/users', function (Request $request) {
+        // ...
+    });
+
+    Route::post('/api/posts', function (Request $request) {
+        // ...
+    });
+
+
+    // Rota para notificação
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead']);
+
+    Route::post('/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 });
 
 require __DIR__ . '/auth.php';
