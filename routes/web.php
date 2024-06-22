@@ -8,6 +8,7 @@ use App\Http\Controllers\HomePageController;
 use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\SaidaController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Http\Request;
 
 
@@ -36,7 +37,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Rota para exibir o formulário de registro de despesas
     Route::get('/expenses/form', [ExpenseController::class, 'create'])->name('expenses.form');
-    
+
 
     // Rota para lidar com o envio do formulário de registro de despesas
     Route::post('/expenses', [ExpenseController::class, 'store'])->name('expenses.store');
@@ -77,5 +78,7 @@ Route::middleware('cors')->group(function () {
 
     Route::post('/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 });
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 require __DIR__ . '/auth.php';
