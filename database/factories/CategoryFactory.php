@@ -2,19 +2,17 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CategoryFactory extends Factory
 {
-    /**
-     * Define the default state of the factory.
-     *
-     * @return array
-     */
+    protected $model = Category::class;
+
     public function definition()
     {
         return [
-            'category_type' => $this->faker->randomElement(['expense', 'income', 'payment_method']),
+            'category_type' => 'income',
             'type' => $this->faker->word,
             'subtype' => $this->faker->word,
         ];

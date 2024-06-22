@@ -7,7 +7,6 @@ use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-
 class EntradaTest extends TestCase
 {
     use RefreshDatabase;
@@ -48,6 +47,75 @@ class EntradaTest extends TestCase
             'category_type' => 'income',
             'description' => 'Salário de Março',
             'amount' => '3000.00'
+        ]);
+    }
+
+    public function test_inserir_entrada_sem_descricao()
+    {
+        // Cria um usuário e autentica
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        // Cria uma categoria
+        $category = Category::factory()->create([
+            'category_type' => 'income',
+            'type' => 'Salário',
+            'subtype' => 'Salário Mensal'
+        ]);
+
+        // Dados da entrada sem descrição
+        $data = [
+            'date' => '2024-03-20',
+            'type' => 'Salário',
+            'subtype' => 'Salário Mensal',
+            'description' => null,
+            'amount' => '3000.00'
+        ];
+
+        // Faz a requisição POST
+        $response = $this->post(route('entradas.store'), $data);
+
+        // Asserções
+        $response->assertRedirect(route('entradas.form'));
+        $response->assertSessionHas('success', 'Entrada registrada com sucesso.');
+        $this->assertDatabaseHas('entradas', [
+            'user_id' => $user->id,
+            'date' => '2024-03-20',
+            'type' => 'Salário',
+            'subtype' => 'Salário Mensal',
+            'category_type' => 'income',
+            'description' => null,
+            'amount' => '3000.00'
+        ]);
+    }
+
+    public function test_inserir_entrada_invalida()
+    {
+        // Cria um usuário e autentica
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        // Dados da entrada inválida
+        $data = [
+            'date' => '2024-03-20',
+            'type' => 'Salário',
+            'subtype' => 'Salário Mensal',
+            'description' => 'Salário de Março',
+            'amount' => 'invalid-amount'
+        ];
+
+        // Faz a requisição POST
+        $response = $this->post(route('entradas.store'), $data);
+
+        // Asserções
+        $response->assertSessionHasErrors(['amount']);
+        $this->assertDatabaseMissing('entradas', [
+            'user_id' => $user->id,
+            'date' => '2024-03-20',
+            'type' => 'Salário',
+            'subtype' => 'Salário Mensal',
+            'description' => 'Salário de Março',
+            'amount' => 'invalid-amount'
         ]);
     }
 }
