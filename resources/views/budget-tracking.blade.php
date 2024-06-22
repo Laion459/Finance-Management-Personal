@@ -126,7 +126,7 @@
                         <ul>`;
             compraDia.compras.forEach(function(compra) {
                 itemLista += `<li>
-                    ${new Date(compra.dia).getDate()}/${new Date(compra.dia).getMonth() + 1}/${new Date(compra.dia).getFullYear()} -
+
                     ${compra.tipo_despesa} -
                     ${compra.categoria} -
                     ${compra.description ?? ''} -
@@ -153,7 +153,7 @@
                 let anoFormatado = dataCompra.getFullYear();
 
                 itemLista += `<li>
-                    ${diaFormatado}/${mesFormatado}/${anoFormatado} -
+
                     ${compra.tipo_despesa} -
                     ${compra.categoria} -
                     ${compra.description ?? ''} -
