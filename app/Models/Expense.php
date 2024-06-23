@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Expense extends Model
 {
+    use HasFactory;
     // Nome da tabela no banco de dados
     protected $table = 'expenses';
 

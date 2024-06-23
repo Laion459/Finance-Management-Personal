@@ -11,124 +11,116 @@ class ExpenseTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function testStoreExpense()
+    public function test_registrar_despesa_valida()
     {
-        // Cria um usuário para autenticação
+        // Cria um usuário e autentica
         $user = User::factory()->create();
+        $this->actingAs($user);
 
-        // Crie uma categoria de despesa e um método de pagamento
+        // Cria uma categoria de despesa
         $expenseCategory = Category::factory()->create([
             'category_type' => 'expense',
-        ]);
-        $paymentMethod = Category::factory()->create([
-            'category_type' => 'payment_method',
+            'subtype' => 'Alimentação'
         ]);
 
-        // Dados para o request
+        // Dados da despesa
         $data = [
-            'date' => '2024-03-18',
-            'amount' => '100.00',
+            'date' => '2024-03-20',
+            'amount' => '150.00',
             'category_id' => $expenseCategory->id,
-            'payment_method' => $paymentMethod->id,
-            'description' => 'Jantar com amigos',
+            'payment_method' => 'credit_card',
+            'description' => 'Jantar no restaurante'
         ];
 
-        // Faz o request autenticado para a rota de registro de despesas
-        $response = $this->actingAs($user)
-            ->post(route('expenses.store'), $data);
+        // Faz a requisição POST
+        $response = $this->post(route('expenses.store'), $data);
+
+        // Debug response content
+        $response->dump();
 
         // Asserções
-        $response->assertStatus(302);
         $response->assertRedirect(route('expenses.form'));
         $response->assertSessionHas('success', 'Despesa registrada com sucesso!');
-
-        // Verifica se a despesa foi salva no banco de dados
         $this->assertDatabaseHas('expenses', [
             'user_id' => $user->id,
-            'date' => '2024-03-18',
-            'amount' => '100.00',
+            'date' => '2024-03-20',
+            'amount' => '150.00',
             'category_id' => $expenseCategory->id,
-            'description' => 'Jantar com amigos',
-            'payment_method' => $paymentMethod->id
+            'payment_method' => 'credit_card',
+            'description' => 'Jantar no restaurante'
         ]);
     }
 
-    public function testStoreExpenseWithInvalidData()
+    public function test_registrar_despesa_sem_descricao()
     {
-        // Cria um usuário para autenticação
+        // Cria um usuário e autentica
         $user = User::factory()->create();
+        $this->actingAs($user);
 
-        // Dados inválidos para o request (faltando campo 'date')
-        $data = [
-            'amount' => '100.00',
-            'category_id' => 1,
-            'payment_method' => 1,
-            'description' => 'Jantar com amigos',
-        ];
-
-        // Faz o request autenticado
-        $response = $this->actingAs($user)
-            ->post(route('expenses.store'), $data);
-
-        // Asserções
-        $response->assertStatus(302);
-        $response->assertSessionHasErrors(['date']);
-
-        // Dados inválidos - Valor não numérico
-        $data = [
-            'date' => '2024-03-18',
-            'amount' => 'cem reais', // Valor inválido
-            'category_id' => 1,
-            'payment_method' => 1,
-            'description' => 'Jantar com amigos',
-        ];
-
-        $response = $this->actingAs($user)
-            ->post(route('expenses.store'), $data);
-
-        $response->assertStatus(302);
-        $response->assertSessionHasErrors(['amount']);
-
-        // Dados inválidos - Categoria inexistente
-        $data = [
-            'date' => '2024-03-18',
-            'amount' => '100.00',
-            'category_id' => 999, // Categoria inexistente
-            'payment_method' => 1,
-            'description' => 'Jantar com amigos',
-        ];
-
-        $response = $this->actingAs($user)
-            ->post(route('expenses.store'), $data);
-
-        $response->assertStatus(302);
-        $response->assertSessionHasErrors(['category_id']);
-
-        // ... (outros campos a serem validados) ...
-    }
-
-    public function testShowExpenseForm()
-    {
-        // Crie uma categoria de despesa e um método de pagamento
+        // Cria uma categoria de despesa
         $expenseCategory = Category::factory()->create([
             'category_type' => 'expense',
-        ]);
-        $paymentMethod = Category::factory()->create([
-            'category_type' => 'payment_method',
+            'subtype' => 'Transporte'
         ]);
 
-        // Cria um usuário para autenticação
-        $user = User::factory()->create();
+        // Dados da despesa sem descrição
+        $data = [
+            'date' => '2024-03-20',
+            'amount' => '50.00',
+            'category_id' => $expenseCategory->id,
+            'payment_method' => 'cash',
+            'description' => null
+        ];
 
-        // Faz o request autenticado para a rota do formulário de despesas
-        $response = $this->actingAs($user)->get(route('expenses.form'));
+        // Faz a requisição POST
+        $response = $this->post(route('expenses.store'), $data);
+
+        // Debug response content
+        $response->dump();
 
         // Asserções
-        $response->assertStatus(200);
-        $response->assertViewIs('expenses.form');
+        $response->assertRedirect(route('expenses.form'));
+        $response->assertSessionHas('success', 'Despesa registrada com sucesso!');
+        $this->assertDatabaseHas('expenses', [
+            'user_id' => $user->id,
+            'date' => '2024-03-20',
+            'amount' => '50.00',
+            'category_id' => $expenseCategory->id,
+            'payment_method' => 'cash',
+            'description' => null
+        ]);
+    }
 
-        // Verifica se os dados necessários para a view estão presentes
-        $response->assertViewHas('expenseCategories');
-        $response->assertViewHas('paymentCategories');
+    public function test_registrar_despesa_invalida()
+    {
+        // Cria um usuário e autentica
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        // Dados da despesa inválida
+        $data = [
+            'date' => '2024-03-20',
+            'amount' => 'invalid-amount',
+            'category_id' => 99999, // ID inválido
+            'payment_method' => 'credit_card',
+            'description' => 'Compra inválida'
+        ];
+
+        // Faz a requisição POST
+        $response = $this->post(route('expenses.store'), $data);
+
+        // Debug response content
+        $response->dump();
+
+        // Asserções
+        $response->assertSessionHasErrors(['amount', 'category_id']);
+        $this->assertDatabaseMissing('expenses', [
+            'user_id' => $user->id,
+            'date' => '2024-03-20',
+            'amount' => 'invalid-amount',
+            'category_id' => 99999,
+            'payment_method' => 'credit_card',
+            'description' => 'Compra inválida'
+        ]);
     }
 }

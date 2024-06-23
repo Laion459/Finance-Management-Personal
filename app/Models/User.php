@@ -49,4 +49,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Notification::class);
     }
+
+    public function entradas()
+    {
+        return $this->hasMany(Entrada::class);
+    }
+
+    public function saidas()
+    {
+        return $this->hasMany(Saida::class);
+    }
+
+    public function expenses()
+{
+    return $this->hasMany(Expense::class);
+}
 }
