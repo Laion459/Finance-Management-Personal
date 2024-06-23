@@ -80,5 +80,8 @@ Route::middleware('cors')->group(function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+use App\Http\Controllers\CurlController;
+
+Route::get('/make-curl-request', [CurlController::class, 'makeCurlRequest']);
 
 require __DIR__ . '/auth.php';

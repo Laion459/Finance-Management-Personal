@@ -16,9 +16,9 @@ class SaidaFactory extends Factory
             'user_id' => \App\Models\User::factory(),
             'date' => $this->faker->date,
             'amount' => $this->faker->randomFloat(2, 10, 1000),
-            'category_id' => Category::factory()->create(['category_type' => 'saida'])->id, // Ajuste 'saida' se necessário
+            'category_id' => Category::factory()->create(['category_type' => 'saida'])->id,
             'description' => $this->faker->sentence,
-            'payment_method' => $this->faker->randomElement(['credit_card', 'debit_card', 'cash']), // Exemplos de métodos
+            'payment_method' => $this->faker->randomElement(['Dinheiro','Crédito','pix']),
         ];
     }
 }

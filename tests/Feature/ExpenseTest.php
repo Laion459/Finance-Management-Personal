@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\Category;
+use App\Models\Expense;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -35,12 +36,9 @@ class ExpenseTest extends TestCase
         // Faz a requisição POST
         $response = $this->post(route('expenses.store'), $data);
 
-        // Debug response content
-        $response->dump();
-
         // Asserções
         $response->assertRedirect(route('expenses.form'));
-        $response->assertSessionHas('success', 'Despesa registrada com sucesso!');
+        $response->assertSessionHas('success', 'Despesa registrada com sucesso.');
         $this->assertDatabaseHas('expenses', [
             'user_id' => $user->id,
             'date' => '2024-03-20',
@@ -75,12 +73,9 @@ class ExpenseTest extends TestCase
         // Faz a requisição POST
         $response = $this->post(route('expenses.store'), $data);
 
-        // Debug response content
-        $response->dump();
-
         // Asserções
         $response->assertRedirect(route('expenses.form'));
-        $response->assertSessionHas('success', 'Despesa registrada com sucesso!');
+        $response->assertSessionHas('success', 'Despesa registrada com sucesso.');
         $this->assertDatabaseHas('expenses', [
             'user_id' => $user->id,
             'date' => '2024-03-20',
@@ -108,9 +103,6 @@ class ExpenseTest extends TestCase
 
         // Faz a requisição POST
         $response = $this->post(route('expenses.store'), $data);
-
-        // Debug response content
-        $response->dump();
 
         // Asserções
         $response->assertSessionHasErrors(['amount', 'category_id']);
