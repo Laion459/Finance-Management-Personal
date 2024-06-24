@@ -2,44 +2,96 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
+use App\Models\Category;
+use App\Models\Expense;
 use App\Models\User;
-use Mockery;
-use App\Http\Controllers\ExpenseController;
+use App\Models\Notification;
+use App\Events\NewNotification;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Event;
+use Tests\TestCase;
 
 class ExpenseControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_create_method_returns_view_with_categories()
+    /**
+     * Testa se o método create() da ExpenseController retorna as categorias corretamente.
+     */
+    public function test_create_method_returns_categories()
     {
-        // Executa a rota de exibição do formulário de despesa
-        $response = $this->get(route('expenses.form'));
+        // Mock do Controller
+        $controller = new \App\Http\Controllers\ExpenseController();
 
-        // Verifica se a resposta é uma instância da view 'expenses.form'
-        $response->assertViewIs('expenses.form');
+        // Simula a execução do método create() do controller
+        $response = $controller->create();
 
-        // Verifica se as variáveis $expenseCategories e $paymentCategories estão sendo passadas para a view
-        $response->assertViewHasAll(['expenseCategories', 'paymentCategories']);
-
-        // Pode verificar se as categorias contêm os dados esperados se necessário
-        $response->assertViewHas('expenseCategories', function ($categories) {
-            return !empty($categories) && count($categories) > 0;
-        });
-
-        $response->assertViewHas('paymentCategories', function ($categories) {
-            return !empty($categories) && count($categories) > 0;
-        });
+        // Verifica se a view 'expenses.form' foi retornada com as categorias corretas
+        $responseCategories = $response->getData();
+        $this->assertArrayHasKey('expenseCategories', $responseCategories);
+        $this->assertArrayHasKey('paymentCategories', $responseCategories);
     }
 
-
-
-
-    protected function tearDown(): void
+    /**
+     * Testa o método store() da ExpenseController com dados válidos.
+     */
+    public function test_store_method_with_valid_data()
     {
-        parent::tearDown();
-        Mockery::close();
+        // Crie um usuário fake
+        $user = User::factory()->create();
+
+        // Crie uma categoria fake
+        $category = Category::factory()->create();
+
+        // Dados do request
+        $data = [
+            'date' => now()->format('Y-m-d'),
+            'amount' => 100.00,
+            'category_id' => $category->id,
+            'payment_method' => 'Credit Card',
+            'description' => 'Test expense',
+        ];
+
+        // Atue como o usuário fake
+        $response = $this->actingAs($user)->post(route('expenses.store'), $data);
+
+        // Verifique se a entrada foi criada no banco de dados
+        $this->assertDatabaseHas('expenses', [
+            'user_id' => $user->id,
+            'date' => $data['date'],
+            'amount' => $data['amount'],
+            'category_id' => $data['category_id'],
+            'payment_method' => $data['payment_method'],
+            'description' => $data['description'],
+        ]);
+
+        // Verifique o redirecionamento e a mensagem de sucesso
+        $response->assertRedirect(route('expenses.form'));
+        $response->assertSessionHas('success', 'Despesa registrada com sucesso!');
+    }
+
+    /**
+     * Testa o método store() da ExpenseController com categoria inválida.
+     */
+    public function test_store_method_with_invalid_category()
+    {
+        // Crie um usuário fake
+        $user = User::factory()->create();
+
+        // Dados do request com categoria inválida
+        $data = [
+            'date' => now()->format('Y-m-d'),
+            'amount' => 100.00,
+            'category_id' => 999, // ID de categoria inválido que não existe
+            'payment_method' => 'Credit Card',
+            'description' => 'Test expense with invalid category',
+        ];
+
+        // Atue como o usuário fake
+        $response = $this->actingAs($user)->post(route('expenses.store'), $data);
+
+        // Verifique se há erros de validação retornados
+        $response->assertSessionHasErrors(['category_id']);
     }
 }

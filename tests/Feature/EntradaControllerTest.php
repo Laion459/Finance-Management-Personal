@@ -1,98 +1,103 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
 use Tests\TestCase;
-use Mockery;
-use Illuminate\Http\Request;
-use App\Models\Entrada;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\User;
 use App\Models\Category;
 use App\Http\Controllers\EntradaController;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Http\Request;
 
 class EntradaControllerTest extends TestCase
 {
-    public function tearDown(): void
-    {
-        Mockery::close();
-    }
+    use RefreshDatabase;
 
-    public function testStore()
+    public function test_it_stores_a_new_entry()
     {
-        // Mock do Request
-        $requestMock = Mockery::mock(Request::class);
-        $requestMock->shouldReceive('validate')
-            ->once()
-            ->with([
-                'type' => 'required',
-                'subtype' => 'required',
-                'description' => 'nullable|string',
-                'amount' => 'required|numeric',
-            ])
-            ->andReturn(true);
+        // Crie um usuário fake
+        $user = User::factory()->create();
 
-        $requestMock->shouldReceive('all')->andReturn([
-            'type' => 'type1',
-            'subtype' => 'subtype1',
-            'description' => 'description',
-            'amount' => 100,
-            'date' => null,
+        // Crie uma categoria fake
+        $category = Category::factory()->create([
+            'type' => 'expense',
+            'subtype' => 'food',
+            'category_type' => 'food_expense',
         ]);
 
-        $requestMock->shouldReceive('type')->andReturn('type1');
-        $requestMock->shouldReceive('subtype')->andReturn('subtype1');
-        $requestMock->shouldReceive('description')->andReturn('description');
-        $requestMock->shouldReceive('amount')->andReturn(100);
-        $requestMock->shouldReceive('date')->andReturn(null);
+        // Dados do request
+        $data = [
+            'type' => 'expense',
+            'subtype' => 'food',
+            'description' => 'Dinner at restaurant',
+            'amount' => 50.00,
+        ];
 
-        // Mock do Category
-        $categoryMock = Mockery::mock('alias:App\Models\Category');
-        $categoryMock->shouldReceive('where')
-            ->with('type', 'type1')
-            ->andReturnSelf();
-        $categoryMock->shouldReceive('where')
-            ->with('subtype', 'subtype1')
-            ->andReturnSelf();
-        $categoryMock->shouldReceive('first')
-            ->once()
-            ->andReturn((object)['category_type' => 'income']);
+        // Atue como o usuário fake
+        $response = $this->actingAs($user)->post(route('entradas.store'), $data);
 
-        // Mock do Auth
-        Auth::shouldReceive('id')->andReturn(1);
+        // Verifique se a entrada foi criada no banco de dados
+        $this->assertDatabaseHas('entradas', [
+            'user_id' => $user->id,
+            'type' => 'expense',
+            'subtype' => 'food',
+            'category_type' => 'food_expense',
+            'description' => 'Dinner at restaurant',
+            'amount' => 50.00,
+        ]);
 
-        // Mock do model Entrada
-        $entradaMock = Mockery::mock('alias:App\Models\Entrada');
-        $entradaMock->shouldReceive('create')
-            ->once()
-            ->with(Mockery::on(function ($data) {
-                return $data['user_id'] === 1 &&
-                       $data['date'] instanceof \Illuminate\Support\Carbon &&
-                       $data['type'] === 'type1' &&
-                       $data['subtype'] === 'subtype1' &&
-                       $data['category_type'] === 'income' &&
-                       $data['description'] === 'description' &&
-                       $data['amount'] === 100;
-            }))
-            ->andReturn(true);
+        // Verifique o redirecionamento e a mensagem de sucesso
+        $response->assertRedirect(route('entradas.form'));
+        $response->assertSessionHas('success', 'Entrada registrada com sucesso.');
+    }
 
-        // Mock do Redirect
-        Redirect::shouldReceive('route')
-            ->once()
-            ->with('entradas.form')
-            ->andReturnSelf();
-        Redirect::shouldReceive('with')
-            ->once()
-            ->with('success', 'Entrada registrada com sucesso.')
-            ->andReturnSelf();
-
-        // Instancia o controller
+    /**
+     * Testa se o método create() da EntradaController retorna as categorias de renda corretamente.
+     */
+    public function test_create_method_returns_income_categories()
+    {
+        // Mock do Controller e do Request
         $controller = new EntradaController();
+        $request = new Request();
 
-        // Chama o método store e verifica o resultado
-        $response = $controller->store($requestMock);
+        // Simula a execução do método create() do controller
+        $response = $controller->create();
 
-        // Verifica o redirecionamento
-        $this->assertInstanceOf(\Illuminate\Http\RedirectResponse::class, $response);
+        // Obtém o conteúdo da variável categoriesJson da resposta
+        $categoriesJson = $response->getData()['categoriesJson'];
+
+        // Categorias esperadas
+        $expectedCategories = [
+            ['type' => 'Salário', 'subtype' => 'Bônus'],
+            ['type' => 'Investimentos', 'subtype' => 'Juros'],
+        ];
+
+        // Verifica se a resposta não está vazia
+        $this->assertNotEmpty($categoriesJson);
+
+        // Verifica se as categorias esperadas estão presentes no retorno
+        foreach ($expectedCategories as $category) {
+            $this->assertContainsOnly('array', $categoriesJson);
+            $this->assertContains($category, $categoriesJson);
+        }
+    }
+
+    public function test_store_method_handles_invalid_data()
+    {
+        // Crie um usuário fake
+        $user = User::factory()->create();
+
+        // Dados inválidos (faltando o campo 'amount')
+        $data = [
+            'type' => 'expense',
+            'subtype' => 'food',
+            'description' => 'Dinner at restaurant',
+        ];
+
+        // Atue como o usuário fake
+        $response = $this->actingAs($user)->post(route('entradas.store'), $data);
+
+        // Verifique se há erros de validação retornados
+        $response->assertSessionHasErrors('amount');
     }
 }

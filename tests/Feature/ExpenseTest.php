@@ -26,26 +26,26 @@ class ExpenseTest extends TestCase
 
         // Dados da despesa
         $data = [
-            'date' => '2024-03-20',
-            'amount' => '150.00',
-            'category_id' => $expenseCategory->id,
-            'payment_method' => 'credit_card',
-            'description' => 'Jantar no restaurante'
+            'date' => '2024-03-20', // Data da despesa
+            'amount' => '150.00', // Valor da despesa
+            'category_id' => $expenseCategory->id, // ID da categoria de despesa
+            'payment_method' => 'credit_card', // Método de pagamento
+            'description' => 'Jantar no restaurante' // Descrição da despesa
         ];
 
-        // Faz a requisição POST
+        // Faz a requisição POST para criar a despesa
         $response = $this->post(route('expenses.store'), $data);
 
         // Asserções
-        $response->assertRedirect(route('expenses.form'));
-        $response->assertSessionHas('success', 'Despesa registrada com sucesso!');
-        $this->assertDatabaseHas('expenses', [
-            'user_id' => $user->id,
-            'date' => '2024-03-20',
-            'amount' => '150.00',
-            'category_id' => $expenseCategory->id,
-            'payment_method' => 'credit_card',
-            'description' => 'Jantar no restaurante'
+        $response->assertRedirect(route('expenses.form')); // Verifica se a requisição foi redirecionada para a página correta
+        $response->assertSessionHas('success', 'Despesa registrada com sucesso!'); // Verifica se a mensagem de sucesso foi exibida
+        $this->assertDatabaseHas('expenses', [ // Verifica se a despesa foi salva no banco de dados
+            'user_id' => $user->id, // ID do usuário
+            'date' => '2024-03-20', // Data da despesa
+            'amount' => '150.00', // Valor da despesa
+            'category_id' => $expenseCategory->id, // ID da categoria de despesa
+            'payment_method' => 'credit_card', // Método de pagamento
+            'description' => 'Jantar no restaurante' // Descrição da despesa
         ]);
     }
 
@@ -63,26 +63,26 @@ class ExpenseTest extends TestCase
 
         // Dados da despesa sem descrição
         $data = [
-            'date' => '2024-03-20',
-            'amount' => '50.00',
-            'category_id' => $expenseCategory->id,
-            'payment_method' => 'cash',
-            'description' => null
+            'date' => '2024-03-20', // Data da despesa
+            'amount' => '50.00', // Valor da despesa
+            'category_id' => $expenseCategory->id, // ID da categoria de despesa
+            'payment_method' => 'cash', // Método de pagamento
+            'description' => null // Descrição da despesa (nula)
         ];
 
-        // Faz a requisição POST
+        // Faz a requisição POST para criar a despesa
         $response = $this->post(route('expenses.store'), $data);
 
         // Asserções
-        $response->assertRedirect(route('expenses.form'));
-        $response->assertSessionHas('success', 'Despesa registrada com sucesso!');
-        $this->assertDatabaseHas('expenses', [
-            'user_id' => $user->id,
-            'date' => '2024-03-20',
-            'amount' => '50.00',
-            'category_id' => $expenseCategory->id,
-            'payment_method' => 'cash',
-            'description' => null
+        $response->assertRedirect(route('expenses.form')); // Verifica se a requisição foi redirecionada para a página correta
+        $response->assertSessionHas('success', 'Despesa registrada com sucesso!'); // Verifica se a mensagem de sucesso foi exibida
+        $this->assertDatabaseHas('expenses', [ // Verifica se a despesa foi salva no banco de dados
+            'user_id' => $user->id, // ID do usuário
+            'date' => '2024-03-20', // Data da despesa
+            'amount' => '50.00', // Valor da despesa
+            'category_id' => $expenseCategory->id, // ID da categoria de despesa
+            'payment_method' => 'cash', // Método de pagamento
+            'description' => null // Descrição da despesa (nula)
         ]);
     }
 
@@ -94,25 +94,25 @@ class ExpenseTest extends TestCase
 
         // Dados da despesa inválida
         $data = [
-            'date' => '2024-03-20',
-            'amount' => 'invalid-amount',
-            'category_id' => 99999, // ID inválido
-            'payment_method' => 'credit_card',
-            'description' => 'Compra inválida'
+            'date' => '2024-03-20', // Data da despesa
+            'amount' => 'invalid-amount', // Valor da despesa (inválido)
+            'category_id' => 99999, // ID da categoria de despesa (inválido)
+            'payment_method' => 'credit_card', // Método de pagamento
+            'description' => 'Compra inválida' // Descrição da despesa
         ];
 
-        // Faz a requisição POST
+        // Faz a requisição POST para criar a despesa
         $response = $this->post(route('expenses.store'), $data);
 
         // Asserções
-        $response->assertSessionHasErrors(['amount', 'category_id']);
-        $this->assertDatabaseMissing('expenses', [
-            'user_id' => $user->id,
-            'date' => '2024-03-20',
-            'amount' => 'invalid-amount',
-            'category_id' => 99999,
-            'payment_method' => 'credit_card',
-            'description' => 'Compra inválida'
+        $response->assertSessionHasErrors(['amount', 'category_id']); // Verifica se a requisição retornou erros de validação
+        $this->assertDatabaseMissing('expenses', [ // Verifica se a despesa não foi salva no banco de dados
+            'user_id' => $user->id, // ID do usuário
+            'date' => '2024-03-20', // Data da despesa
+            'amount' => 'invalid-amount', // Valor da despesa (inválido)
+            'category_id' => 99999, // ID da categoria de despesa (inválido)
+            'payment_method' => 'credit_card', // Método de pagamento
+            'description' => 'Compra inválida' // Descrição da despesa
         ]);
     }
 }

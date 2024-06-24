@@ -68,3 +68,4 @@ class ExpenseController extends Controller
         return redirect()->route('expenses.form')->with('success', 'Despesa registrada com sucesso!');
     }
 }
+
