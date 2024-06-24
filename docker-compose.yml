@@ -1,0 +1,47 @@
+
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www/html
+    networks:
+      - laravel
+
+  db:
+    image: mysql:5.7
+    container_name: laravel-db
+    environment:
+      MYSQL_DATABASE: fmp
+      MYSQL_ROOT_PASSWORD: kali
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - laravel
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: laravel-phpmyadmin
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: kali
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    networks:
+      - laravel
+
+volumes:
+  db_data:
+
+networks:
+  laravel:
+    driver: bridge
