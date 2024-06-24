@@ -43,7 +43,7 @@ class EntradaController extends Controller
         // Crie uma nova entrada no banco de dados
         Entrada::create([
             'user_id' => auth()->id(),
-            'date' => $request->date ?? now(), 
+            'date' => $request->date ?? now(),
             'type' => $request->type,
             'subtype' => $request->subtype,
             'category_type' => $category->category_type,

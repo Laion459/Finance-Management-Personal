@@ -38,7 +38,7 @@ class ExpenseTest extends TestCase
 
         // Asserções
         $response->assertRedirect(route('expenses.form'));
-        $response->assertSessionHas('success', 'Despesa registrada com sucesso.');
+        $response->assertSessionHas('success', 'Despesa registrada com sucesso!');
         $this->assertDatabaseHas('expenses', [
             'user_id' => $user->id,
             'date' => '2024-03-20',
@@ -75,7 +75,7 @@ class ExpenseTest extends TestCase
 
         // Asserções
         $response->assertRedirect(route('expenses.form'));
-        $response->assertSessionHas('success', 'Despesa registrada com sucesso.');
+        $response->assertSessionHas('success', 'Despesa registrada com sucesso!');
         $this->assertDatabaseHas('expenses', [
             'user_id' => $user->id,
             'date' => '2024-03-20',

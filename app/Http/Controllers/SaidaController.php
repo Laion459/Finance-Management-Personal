@@ -7,6 +7,7 @@ use App\Models\Saida;
 use App\Models\Category;
 use App\Events\NewNotification;
 use App\Models\Notification;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SaidaController extends Controller
 {
@@ -31,7 +32,6 @@ class SaidaController extends Controller
         return view('saidas.form', compact('expenseCategories', 'paymentCategories'));
     }
 
-
     public function store(Request $request)
     {
         // Validação dos dados do formulário
@@ -42,6 +42,14 @@ class SaidaController extends Controller
             'payment_method' => 'required',
             'description' => 'nullable',
         ]);
+
+        try {
+            // Tenta encontrar a categoria pelo ID fornecido
+            $category = Category::findOrFail($request->category_id);
+        } catch (ModelNotFoundException $e) {
+            // Se não encontrar a categoria, retorna com erro
+            return back()->withErrors(['category_id' => 'The selected category id is invalid.']);
+        }
 
         // Recupera o ID do usuário autenticado
         $userId = auth()->id();
@@ -59,7 +67,7 @@ class SaidaController extends Controller
         // Enviar uma notificação para o usuário
         $notification = new Notification();
         $notification->user_id = auth()->id();
-        $notification->message = 'N: ' . $saida->category_id . ' - R$ ' . $saida->amount;
+        $notification->message = 'N: ' . $saida->category_id . ' - R$ ' . number_format($saida->amount, 2);
         $notification->save();
 
         // Emitir evento de nova notificação via broadcast
